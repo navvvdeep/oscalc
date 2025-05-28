@@ -30,6 +30,7 @@ otpLabel=Enter OTP
 otpPlaceholder=Enter OTP
 verifyOtpBtn=Verify OTP
 invalidOtp=Invalid OTP. Please try again.
+disclaimer=The purpose of this website is solely for testing purposes. Any calculations performed on this website are not related to real-life calculations or those conducted by any government or official authority. This website is created solely for the assistance and information of users. This calculator will compute the road tax for vehicles registered from different states, which is only an estimated calculation.
 
 [hi]
 title=वाहन कर कैलकुलेटर
@@ -63,3 +64,4 @@ otpLabel=ओटीपी दर्ज करें
 otpPlaceholder=ओटीपी दर्ज करें
 verifyOtpBtn=ओटीपी सत्यापित करें
 invalidOtp=गलत ओटीपी। कृपया पुनः प्रयास करें।
+disclaimer=इस वेबसाइट का उद्देश्य केवल परीक्षण (टेस्टिंग) के लिए है। इस वेबसाइट पर किए गए किसी भी गणना का वास्तविक जीवन या किसी सरकारी अथवा आधिकारिक कार्यालय द्वारा की गई गणना से कोई संबंध नहीं है। यह वेबसाइट केवल उपयोगकर्ता की सहायता और जानकारी के लिए बनाई गई है। यह कैलकुलेटर विभिन्न राज्यों से आने वाले वाहनों को दर्ज करते समय का रोड टैक्स गणना करेगा, जो कि केवल एक अनुमानित गणना मात्र है।

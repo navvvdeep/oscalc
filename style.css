@@ -213,6 +213,20 @@ label {
   }
 }
 
+/* Top bar styling */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  gap: 1rem;
+  min-height: 48px;
+}
+
 /* Clock styling */
 .clock {
   position: fixed;
@@ -230,29 +244,73 @@ label {
 /* Language switcher styling */
 .language-switcher {
   position: fixed;
-  top: 1rem;
-  left: 2rem;
-  z-index: 1001;
+  top: 12px;
+  left: 12px;
+  z-index: 9999;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
   display: flex;
   gap: 0.5rem;
 }
 
+/* Style for language buttons */
 .lang-btn {
-  background: #f3f4f6;
-  color: #1e3a8a;
+  padding: 6px 14px;
   border: none;
-  padding: 0.4rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 4px;
+  background: #e0e0e0;
+  color: #222;
   font-weight: bold;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
+  box-shadow: none;
+}
+.lang-btn.active {
+  background: #1976d2;
+  color: #fff;
 }
 
-.lang-btn.active,
-.lang-btn:hover {
-  background: #2563eb;
-  color: #fff;
+/* Remove any background/banner from top-bar */
+.top-bar {
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  position: static;
+  z-index: 1;
+  gap: 0;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    padding: 6px 0;
+  }
+
+  .clock {
+    text-align: right;
+    font-size: 0.98em;
+    margin-top: 2px;
+  }
+
+  .language-switcher {
+    top: 6px;
+    left: 6px;
+    gap: 0.25rem;
+  }
+  .lang-btn {
+    padding: 5px 10px;
+    font-size: 0.98em;
+  }
 }
 
 .text-left {

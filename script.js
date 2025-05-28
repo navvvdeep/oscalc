@@ -134,7 +134,7 @@ const Tab1 = ({ text }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold text-blue-800 mb-4 text-left">{text.tab1Title}</h2>
+      <h2 className="text-xl font-bold text-blue-800 mb-4 text-center">{text.tab1Title}</h2>
       <div className="bg-white p-4 rounded shadow text-left">
         <label className="block mb-2">{text.vehicleType}</label>
         <select
@@ -247,7 +247,7 @@ const Tab2 = ({ text }) => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold text-blue-800 mb-4 text-left">{text.tab2Title}</h2>
-      <div className="bg-white p-4 rounded shadow text-left">
+      <div className="bg-white p-4 rounded shadow text-center">
         <label className="block mb-2">{text.vehicleType}</label>
         <select
           className="w-full p-2 border rounded"
@@ -380,11 +380,150 @@ function Clock() {
   )
 }
 
+function DisclaimerModal({ text, onAgree, onDecline }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        zIndex: 99999,
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(0,0,0,0.45)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "12px",
+          maxWidth: "95vw",
+          width: 400,
+          padding: "2rem",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          textAlign: "left"
+        }}
+      >
+        <h2 style={{ fontWeight: "bold", fontSize: "1.2em", marginBottom: "1rem", color: "#b91c1c" }}>
+          {text.disclaimerTitle || "Disclaimer"}
+        </h2>
+        <div style={{ marginBottom: "1.5rem", whiteSpace: "pre-line", color: "#333" }}>
+          {text.disclaimerText || "The purpose of this website is solely for testing purposes. Any calculations performed on this website are not related to real-life calculations or those conducted by any government or official authority. This website is created solely for the assistance and information of users. This calculator will compute the road tax for vehicles registered from different states, which is only an estimated calculation."}
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+          <button
+            onClick={onDecline}
+            style={{
+              background: "#e5e7eb",
+              color: "#222",
+              border: "none",
+              borderRadius: "4px",
+              padding: "8px 18px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            {text.declineBtn || "Decline"}
+          </button>
+          <button
+            onClick={onAgree}
+            style={{
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              padding: "8px 18px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            {text.agreeBtn || "I Agree"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GoogleFormBox({ open, onClose }) {
+  if (!open) return null;
+  return (
+    <div
+      style={{
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100vw",
+        maxWidth: "100vw",
+        zIndex: 999,
+        display: "flex",
+        justifyContent: "center",
+        pointerEvents: "none"
+      }}
+    >
+      <div
+        style={{
+          width: 320,
+          maxWidth: "98vw",
+          margin: 8,
+          pointerEvents: "auto",
+          position: "relative"
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+            background: "#e5e7eb",
+            border: "none",
+            borderRadius: "50%",
+            width: 28,
+            height: 28,
+            fontWeight: "bold",
+            cursor: "pointer",
+            zIndex: 2
+          }}
+          aria-label="Close"
+        >×</button>
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSdb38qvE7gXz1ldAW83nZ-UVFzDAx8B3TeS1blwW8l217ru-A/viewform?embedded=true"
+          width="100%"
+          height="220"
+          frameBorder="0"
+          marginHeight="0"
+          marginWidth="0"
+          style={{
+            borderRadius: "10px",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+            background: "#fff",
+            display: "block"
+          }}
+          allow="autoplay"
+          title="Comment Form"
+        >
+          Loading…
+        </iframe>
+      </div>
+    </div>
+  );
+}
+
 // Example main App component
 function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
   const [translations, setTranslations] = useState(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    // Only show if not previously agreed in this session
+    return !sessionStorage.getItem("disclaimerAgreed");
+  });
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     loadTranslations().then(setTranslations);
@@ -396,66 +535,114 @@ function App() {
 
   const text = translations[language];
 
+  const handleAgree = () => {
+    sessionStorage.setItem("disclaimerAgreed", "yes");
+    setShowDisclaimer(false);
+  };
+
+  const handleDecline = () => {
+    window.location.href = "https://google.co.in";
+  };
+
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <LanguageSwitcher language={language} setLanguage={setLanguage} />
-      <Clock />
-      <div className="flex gap-4 mb-4">
-        <button
-          className={`px-4 py-2 rounded ${activeTab === "tab1" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          onClick={() => setActiveTab("tab1")}
-        >
-          {text.tab1}
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${activeTab === "tab2" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          onClick={() => setActiveTab("tab2")}
-        >
-          {text.tab2}
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${activeTab === "tab3" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          onClick={() => setActiveTab("tab3")}
-        >
-          Krutidev To Mangal
-        </button>
-      </div>
-      <div style={{ marginTop: "3rem", textAlign: "center" }}>
-        {/* Remove Vehicle Tax Calculator heading from tab 3 */}
-        {activeTab !== "tab3" && <h1>{text.title}</h1>}
-        {activeTab === "tab1" && <Tab1 text={text} />}
-        {activeTab === "tab2" && <Tab2 text={text} />}
-        {activeTab === "tab3" && (
-          <div
+    <>
+      {showDisclaimer && (
+        <DisclaimerModal
+          text={text}
+          onAgree={handleAgree}
+          onDecline={handleDecline}
+        />
+      )}
+      {!showDisclaimer && (
+        <>
+          <div className="max-w-2xl mx-auto p-4">
+            <div className="top-bar">
+              <LanguageSwitcher language={language} setLanguage={setLanguage} />
+              <Clock />
+            </div>
+            <div className="flex gap-4 mb-4">
+              <button
+                className={`px-4 py-2 rounded ${activeTab === "tab1" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                onClick={() => setActiveTab("tab1")}
+              >
+                {text.tab1}
+              </button>
+              <button
+                className={`px-4 py-2 rounded ${activeTab === "tab2" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                onClick={() => setActiveTab("tab2")}
+              >
+                {text.tab2}
+              </button>
+              <button
+                className={`px-4 py-2 rounded ${activeTab === "tab3" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                onClick={() => setActiveTab("tab3")}
+              >
+                Krutidev To Mangal
+              </button>
+            </div>
+            <div style={{ marginTop: "3rem", textAlign: "center" }}>
+              {/* Remove Vehicle Tax Calculator heading from tab 3 */}
+              {activeTab !== "tab3" && <h1>{text.title}</h1>}
+              {activeTab === "tab1" && <Tab1 text={text} />}
+              {activeTab === "tab2" && <Tab2 text={text} />}
+              {activeTab === "tab3" && (
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: "100vw",
+                    margin: "0 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    background: "transparent"
+                  }}
+                >
+                  <iframe
+                    src="index2.html"
+                    title="Krutidev To Mangal"
+                    style={{
+                      width: "100%",
+                      minWidth: 0,
+                      maxWidth: "100vw",
+                      minHeight: "60vh",
+                      height: "80vh",
+                      border: "none",
+                      borderRadius: "0.75rem",
+                      background: "#fff",
+                      flex: 1,
+                      boxSizing: "border-box"
+                    }}
+                    allowFullScreen
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Feedback Button */}
+          <button
+            onClick={() => setShowFeedback(true)}
             style={{
-              minHeight: 600,
-              maxWidth: 1200,
-              margin: "0 auto",
-              display: "flex",
-              flexDirection: "row",
-              gap: "2rem",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              background: "transparent"
+              position: "fixed",
+              bottom: 20,
+              left: 20,
+              zIndex: 1000,
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "24px",
+              padding: "10px 22px",
+              fontWeight: "bold",
+              fontSize: "1em",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+              cursor: "pointer"
             }}
           >
-            <iframe
-              src="index2.html"
-              title="Krutidev To Mangal"
-              style={{
-                width: "100%",
-                minWidth: 900,
-                minHeight: "600px",
-                border: "none",
-                borderRadius: "0.75rem",
-                background: "#fff",
-                flex: 1
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+            Feedback
+          </button>
+          <GoogleFormBox open={showFeedback} onClose={() => setShowFeedback(false)} />
+        </>
+      )}
+    </>
   );
 }
 
