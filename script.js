@@ -519,10 +519,8 @@ function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
   const [translations, setTranslations] = useState(null);
-  const [showDisclaimer, setShowDisclaimer] = useState(() => {
-    // Only show if not previously agreed in this session
-    return !sessionStorage.getItem("disclaimerAgreed");
-  });
+  // Always show disclaimer on reload/refresh
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
@@ -536,7 +534,6 @@ function App() {
   const text = translations[language];
 
   const handleAgree = () => {
-    sessionStorage.setItem("disclaimerAgreed", "yes");
     setShowDisclaimer(false);
   };
 
