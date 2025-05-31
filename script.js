@@ -514,18 +514,94 @@ function GoogleFormBox({ open, onClose }) {
   );
 }
 
+// Add this TOTP modal before your App component
+function TotpModal({ onSuccess }) {
+  const [code, setCode] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:9000/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: code })
+      });
+      const text = await res.text();
+      if (text.trim().toLowerCase().startsWith("ok")) {
+        onSuccess();
+      } else if (text.toLowerCase().includes("invalid")) {
+        setError("Invalid code. Try again.");
+      } else {
+        setError("Verification failed.");
+      }
+    } catch {
+      setError("Server error. Try again.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{
+      position: "fixed", zIndex: 100001, top: 0, left: 0, width: "100vw", height: "100vh",
+      background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center"
+    }}>
+      <form onSubmit={handleSubmit} style={{
+        background: "#fff", borderRadius: "16px", width: 340, padding: "2.5rem 2rem",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.18)", textAlign: "center", position: "relative"
+      }}>
+        <h2 style={{ fontWeight: "bold", fontSize: "1.3em", marginBottom: "1.2rem", color: "#2563eb" }}>
+          🔒 TOTP Authentication
+        </h2>
+        <input
+          type="text"
+          value={code}
+          onChange={e => setCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="Enter 6-digit code"
+          style={{
+            width: "100%", padding: "12px", fontSize: "1.1em", borderRadius: "6px",
+            border: "1px solid #bbb", marginBottom: "1.2rem", outline: "none"
+          }}
+          maxLength={6}
+          autoFocus
+          disabled={loading}
+        />
+        {error && <div style={{ color: "#b91c1c", marginBottom: "1rem" }}>{error}</div>}
+        <button
+          type="submit"
+          disabled={loading || code.length !== 6}
+          style={{
+            background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px",
+            padding: "10px 0", fontWeight: "bold", fontSize: "1.1em", width: "100%",
+            cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1
+          }}
+        >
+          {loading ? "Verifying..." : "Verify"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 // Example main App component
 function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
   const [translations, setTranslations] = useState(null);
-  // Always show disclaimer on reload/refresh
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [totpVerified, setTotpVerified] = React.useState(false);
 
   useEffect(() => {
     loadTranslations().then(setTranslations);
   }, []);
+
+  if (!totpVerified) {
+    return <TotpModal onSuccess={() => setTotpVerified(true)} />;
+  }
 
   if (!translations) {
     return <div>Loading...</div>;
