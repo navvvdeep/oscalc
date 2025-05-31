@@ -25,6 +25,10 @@ app.post("/verify", (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("TOTP backend is running.");
+});
+
 app.listen(9000, () => {
   console.log("TOTP Authenticator running on PORT: 9000");
 });
