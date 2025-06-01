@@ -633,21 +633,21 @@ function App() {
               <LanguageSwitcher language={language} setLanguage={setLanguage} />
               <Clock />
             </div>
-            <div className="flex gap-4 mb-4">
+            <div className="ribbon-tabs">
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab1" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab1" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab1")}
               >
                 {text.tab1}
               </button>
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab2" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab2" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab2")}
               >
                 {text.tab2}
               </button>
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab3" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab3" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab3")}
               >
                 Krutidev To Mangal
@@ -667,26 +667,36 @@ function App() {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    background: "transparent"
+                    background: "transparent",
+                    minHeight: "60vh"
                   }}
                 >
-                  <iframe
-                    src="index2.html"
-                    title="Krutidev To Mangal"
-                    style={{
-                      width: "100%",
-                      minWidth: 0,
-                      maxWidth: "100vw",
-                      minHeight: "60vh",
-                      height: "80vh",
-                      border: "none",
-                      borderRadius: "0.75rem",
-                      background: "#fff",
-                      flex: 1,
-                      boxSizing: "border-box"
-                    }}
-                    allowFullScreen
-                  />
+                  <div style={{
+                    width: "100%",
+                    maxWidth: 900,
+                    minHeight: "50vh",
+                    height: "70vh",
+                    background: "#fff",
+                    borderRadius: "0.75rem",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}>
+                    <iframe
+                      src="index2.html"
+                      title="Krutidev To Mangal"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        border: "none",
+                        background: "#fff",
+                        flex: 1,
+                        minHeight: 300,
+                      }}
+                      allowFullScreen
+                    />
+                  </div>
                 </div>
               )}
             </div>
