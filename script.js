@@ -667,9 +667,11 @@ function App() {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    background: "transparent"
+                    background: "transparent",
+                    minHeight: "60vh"
                   }}
                 >
+<<<<<<< HEAD
                   <iframe
                     src="index2.html"
                     title="Krutidev To Mangal"
@@ -687,6 +689,34 @@ function App() {
                     }}
                     allowFullScreen
                   />
+=======
+                  <div style={{
+                    width: "100%",
+                    maxWidth: 900,
+                    minHeight: "50vh",
+                    height: "70vh",
+                    background: "#fff",
+                    borderRadius: "0.75rem",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}>
+                    <iframe
+                      src="index2.html"
+                      title="Krutidev To Mangal"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        border: "none",
+                        background: "#fff",
+                        flex: 1,
+                        minHeight: 300,
+                      }}
+                      allowFullScreen
+                    />
+                  </div>
+>>>>>>> 6c4bedef02a3cc20180eaa855eace0c9913e4eca
                 </div>
               )}
             </div>
