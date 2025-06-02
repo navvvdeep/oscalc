@@ -633,21 +633,21 @@ function App() {
               <LanguageSwitcher language={language} setLanguage={setLanguage} />
               <Clock />
             </div>
-            <div className="flex gap-4 mb-4">
+            <div className="ribbon-tabs">
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab1" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab1" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab1")}
               >
                 {text.tab1}
               </button>
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab2" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab2" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab2")}
               >
                 {text.tab2}
               </button>
               <button
-                className={`px-4 py-2 rounded ${activeTab === "tab3" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                className={`ribbon-tab-btn${activeTab === "tab3" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab3")}
               >
                 Krutidev To Mangal
@@ -677,7 +677,7 @@ function App() {
                       width: "100%",
                       minWidth: 0,
                       maxWidth: "100vw",
-                      minHeight: "60vh",
+                      minHeight: "100vh",
                       height: "80vh",
                       border: "none",
                       borderRadius: "0.75rem",
