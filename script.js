@@ -671,30 +671,11 @@ function App() {
                     minHeight: "60vh"
                   }}
                 >
-<<<<<<< HEAD
-                  <iframe
-                    src="index2.html"
-                    title="Krutidev To Mangal"
-                    style={{
-                      width: "100%",
-                      minWidth: 0,
-                      maxWidth: "100vw",
-                      minHeight: "100vh",
-                      height: "80vh",
-                      border: "none",
-                      borderRadius: "0.75rem",
-                      background: "#fff",
-                      flex: 1,
-                      boxSizing: "border-box"
-                    }}
-                    allowFullScreen
-                  />
-=======
                   <div style={{
                     width: "100%",
                     maxWidth: 900,
-                    minHeight: "50vh",
-                    height: "70vh",
+                    minHeight: "100vh",
+                    height: "100vh",
                     background: "#fff",
                     borderRadius: "0.75rem",
                     boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
@@ -707,7 +688,10 @@ function App() {
                       title="Krutidev To Mangal"
                       style={{
                         width: "100%",
+                        maxWidth: "100vw",
                         height: "100%",
+                        maxHeight: "100vh",
+                        display: "flex",
                         border: "none",
                         background: "#fff",
                         flex: 1,
@@ -716,7 +700,6 @@ function App() {
                       allowFullScreen
                     />
                   </div>
->>>>>>> 6c4bedef02a3cc20180eaa855eace0c9913e4eca
                 </div>
               )}
             </div>
