@@ -693,15 +693,16 @@ function App() {
   const [translations, setTranslations] = useState(null);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [totpVerified, setTotpVerified] = React.useState(false);
+  // const [totpVerified, setTotpVerified] = React.useState(false); // <-- Disable TOTP
 
   useEffect(() => {
     loadTranslations().then(setTranslations);
   }, []);
 
-  if (!totpVerified) {
-    return <TotpModal onSuccess={() => setTotpVerified(true)} />;
-  }
+  // --- Disable TOTP check ---
+  // if (!totpVerified) {
+  //   return <TotpModal onSuccess={() => setTotpVerified(true)} />;
+  // }
 
   if (!translations) {
     return <div>Loading...</div>;
