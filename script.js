@@ -586,7 +586,107 @@ function TotpModal({ onSuccess }) {
   );
 }
 
-// Example main App component
+// Tab6: Images to PDF (browser-based, A4 size)
+function Tab6ImagesToPdf() {
+  const [files, setFiles] = React.useState([]);
+  const [processing, setProcessing] = React.useState(false);
+
+  // Load pdf-lib from CDN if not already loaded
+  React.useEffect(() => {
+    if (!window.PDFLib) {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/pdf-lib/dist/pdf-lib.min.js";
+      script.onload = () => {};
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
+  };
+
+  const mergeImagesToPdf = async () => {
+    if (!window.PDFLib) {
+      alert("Loading PDF engine, please wait a moment and try again.");
+      return;
+    }
+    if (!files.length) {
+      alert("Please select image(s) first!");
+      return;
+    }
+    setProcessing(true);
+    try {
+      const pdfDoc = await window.PDFLib.PDFDocument.create();
+      const a4Width = 595.28, a4Height = 841.89; // A4 in points
+
+      for (let file of files) {
+        const imgBytes = await file.arrayBuffer();
+        let img, dims;
+        if (file.type === "image/png") {
+          img = await pdfDoc.embedPng(imgBytes);
+        } else {
+          img = await pdfDoc.embedJpg(imgBytes);
+        }
+        dims = img.scale(1);
+
+        // Fit image inside A4, keep aspect ratio
+        let scale = Math.min(a4Width / dims.width, a4Height / dims.height, 1);
+        let imgW = dims.width * scale;
+        let imgH = dims.height * scale;
+        let x = (a4Width - imgW) / 2;
+        let y = (a4Height - imgH) / 2;
+
+        const page = pdfDoc.addPage([a4Width, a4Height]);
+        page.drawImage(img, { x, y, width: imgW, height: imgH });
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "images_merged.pdf";
+      a.click();
+    } catch (e) {
+      alert("Failed to create PDF: " + e.message);
+    }
+    setProcessing(false);
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold text-blue-800 mb-4 text-center">
+        Images to PDF (A4)
+      </h2>
+      <div className="bg-white p-4 rounded shadow flex flex-col items-center gap-4">
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileChange}
+          disabled={processing}
+        />
+        <div>
+          {files.length > 0 && (
+            <div style={{ fontSize: "0.98em", color: "#2563eb" }}>
+              {files.length} image(s) selected
+            </div>
+          )}
+        </div>
+        <button
+          className="bg-green-500 text-white px-6 py-2 rounded font-bold hover:bg-green-600"
+          onClick={mergeImagesToPdf}
+          disabled={processing || !files.length}
+        >
+          {processing ? "Processing..." : "Merge & Download PDF"}
+        </button>
+      </div>
+      <div className="mt-4 text-gray-500 text-sm text-center">
+        Each image will be placed on a new A4 page, centered and scaled to fit.
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
@@ -652,10 +752,28 @@ function App() {
               >
                 Krutidev To Mangal
               </button>
+              <button
+                className={`ribbon-tab-btn${activeTab === "tab4" ? " active" : ""}`}
+                onClick={() => setActiveTab("tab4")}
+              >
+                PDF Compressor / Image to PDF
+              </button>
+              <button
+                className={`ribbon-tab-btn${activeTab === "tab5" ? " active" : ""}`}
+                onClick={() => setActiveTab("tab5")}
+              >
+                Image Compressor/Resizer
+              </button>
+              <button
+                className={`ribbon-tab-btn${activeTab === "tab6" ? " active" : ""}`}
+                onClick={() => setActiveTab("tab6")}
+              >
+                Images to PDF
+              </button>
             </div>
             <div style={{ marginTop: "3rem", textAlign: "center" }}>
-              {/* Remove Vehicle Tax Calculator heading from tab 3 */}
-              {activeTab !== "tab3" && <h1>{text.title}</h1>}
+              {/* Remove Vehicle Tax Calculator heading from tab 3, 4, 5, 6 */}
+              {activeTab !== "tab3" && activeTab !== "tab4" && activeTab !== "tab5" && activeTab !== "tab6" && <h1>{text.title}</h1>}
               {activeTab === "tab1" && <Tab1 text={text} />}
               {activeTab === "tab2" && <Tab2 text={text} />}
               {activeTab === "tab3" && (
@@ -684,7 +802,7 @@ function App() {
                     flexDirection: "column"
                   }}>
                     <iframe
-                      src="index2.html"
+                      src="kruti.html"
                       title="Krutidev To Mangal"
                       style={{
                         width: "100%",
@@ -702,6 +820,102 @@ function App() {
                   </div>
                 </div>
               )}
+              {activeTab === "tab4" && (
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: "100vw",
+                    margin: "0 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    background: "transparent",
+                    minHeight: "60vh"
+                  }}
+                >
+                  <div style={{
+                    width: "100%",
+                    maxWidth: 900,
+                    minHeight: "100vh",
+                    height: "100vh",
+                    background: "#fff",
+                    borderRadius: "0.75rem",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}>
+                    <iframe
+                      src="pdf.html"
+                      title="PDF Compressor/Image to PDF"
+                      style={{
+                        width: "100%",
+                        maxWidth: "100vw",
+                        height: "100%",
+                        maxHeight: "100vh",
+                        display: "flex",
+                        border: "none",
+                        background: "#fff",
+                        flex: 1,
+                        minHeight: 400,
+                        overflow: "hidden",
+                        scrollbarWidth: "5px"
+                      }}
+                      scrolling="yes"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+              {activeTab === "tab5" && (
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: "100vw",
+                    margin: "0 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    background: "transparent",
+                    minHeight: "60vh"
+                  }}
+                >
+                  <div style={{
+                    width: "100%",
+                    maxWidth: 900,
+                    minHeight: "100vh",
+                    height: "100vh",
+                    background: "#fff",
+                    borderRadius: "0.75rem",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}>
+                    <iframe
+                      src="image.html"
+                      title="Image Compressor/Resizer"
+                      style={{
+                        width: "100%",
+                        maxWidth: "100vw",
+                        height: "100%",
+                        maxHeight: "100vh",
+                        display: "flex",
+                        border: "none",
+                        background: "#fff",
+                        flex: 1,
+                        minHeight: 400,
+                        overflow: "hidden",
+                        scrollbarWidth: "5px"
+                        
+                      }}
+                      scrolling="yes"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+              {activeTab === "tab6" && <Tab6ImagesToPdf />}
             </div>
           </div>
           {/* Feedback Button */}

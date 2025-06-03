@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div class="header">
+    <span class="main-heading">Image Compressor/Resizer</span>
+  </div>
+
+  <!-- 1. Upload process सबसे ऊपर -->
+  <div class="upload-card">
+    <label for="web-worker">
+      <span class="upload-title">Select Images</span>
+      <input id="web-worker" type="file" accept="image/*" multiple />
+    </label>
+    <div id="web-worker-log"></div>
+    <div id="web-worker-progress"></div> <!-- Add this line -->
+    <div id="download-btn-container"></div>
+  </div>
+
+  <!-- 2. Options box नीचे, output size (approx) भी दिखाएं -->
+  <div class="options-card">
+    <div class="options-title">Options:</div>
+    <label for="sizeUnit">Target Size:
+      <input type="number" id="targetSize" name="targetSize" value="1" min="0.01" step="0.01" style="width: 80px;" />
+      <select id="sizeUnit" name="sizeUnit" class="custom-select">
+        <option value="MB">MB</option>
+        <option value="KB">KB</option>
+      </select>
+    </label>
+    <label for="maxWidthOrHeight">Select Resolution:
+      <select id="maxWidthOrHeight" name="maxWidthOrHeight" class="custom-select">
+        <option value="480">480P</option>
+        <option value="720">720P</option>
+        <option value="1080">1080P</option>
+      </select>
+    </label>
+    <div style="margin-top:0.7rem;">
+      <span style="color:#2563eb;font-weight:500;">Approx Output Size: </span>
+      <span id="approx-output-size" style="font-weight:600;">-</span>
+    </div>
+  </div>
+  <hr class="divider" />
+  <div class="actions">
+    <!-- 2. Start और Abort बटन -->
+    <button class="start-btn" onclick="startCompression()">Start</button>
+    <button class="abort-btn" onclick="abort()">Reset</button>
+  </div>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: linear-gradient(180deg, #fafdff 0%, #dbe8fa 100%);
+      color: #222;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(45deg, #3b82f6, #2563eb);
+      padding: 1.5rem 0 1rem 0;
+      box-shadow: 0 2px 12px 0 rgba(37, 99, 235, 0.13);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .main-heading {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .options-card {
+      background: linear-gradient(180deg, #fff 0%, #eaf1fb 100%);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px 0 rgba(80, 120, 180, 0.13);
+      padding: 1.2rem 2rem;
+      margin: 2rem auto 1.5rem auto;
+      max-width: 400px;
+      border: 1px solid #dbe8fa;
+    }
+
+    .options-title {
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    label {
+      color: #205081;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    input[type="number"] {
+      border: 1px solid #b6cbe7;
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      margin-left: 0.5rem;
+      background: #fafdff;
+      color: #2563eb;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px 0 rgba(180,200,230,0.10);
+      transition: border 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border: 1.5px solid #3b82f6;
+      outline: none;
+    }
+
+    select {
+      background: linear-gradient(45deg, #6b7280, #4b5563);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px 0 rgba(107, 114, 128, 0.13);
+      margin-left: 0.5rem;
+    }
+
+    .custom-select {
+      background: #f3f4f6 !important;
+      color: #222 !important;
+      border: 1px solid #b6cbe7;
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px 0 rgba(107, 114, 128, 0.13);
+      margin-left: 0.5rem;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    .custom-select:focus {
+      border: 1.5px solid #3b82f6;
+      outline: none;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1.5px solid #b5c9e7;
+      margin: 2rem 0;
+      width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .upload-card {
+      background: linear-gradient(to bottom, #eaf1fb 80%, #dbe8fa 100%);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px 0 rgba(80, 120, 180, 0.10);
+      padding: 1.2rem 2rem;
+      margin: 0 auto 1.5rem auto;
+      max-width: 500px;
+      border: 1px solid #dbe8fa;
+    }
+
+    .upload-title {
+      color: #10b981;
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+
+    input[type="file"] {
+      margin-left: 1rem;
+      background: linear-gradient(45deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px 0 rgba(16, 185, 129, 0.13);
+      cursor: pointer;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background: linear-gradient(45deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px 0 rgba(16, 185, 129, 0.13);
+      cursor: pointer;
+    }
+
+    #web-worker-log {
+      color: #2563eb;
+      margin-top: 0.7rem;
+      font-size: 0.98rem;
+      background: #fafdff;
+      border-radius: 6px;
+      padding: 0.5rem 0.8rem;
+      box-shadow: 0 1px 4px 0 rgba(180,200,230,0.10);
+      min-height: 1.5em;
+    }
+
+    #download-btn-container {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: center;
+    }
+
+    .download-btn {
+      background: linear-gradient(45deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 2.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px 0 rgba(16, 185, 129, 0.13);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .download-btn:hover {
+      background: linear-gradient(45deg, #059669, #10b981);
+      box-shadow: 0 4px 16px 0 rgba(16, 185, 129, 0.18);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0 1rem 0;
+    }
+
+    .abort-btn {
+      background: linear-gradient(45deg, #6b7280, #4b5563);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 2.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px 0 rgba(107, 114, 128, 0.13);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .abort-btn:hover {
+      background: linear-gradient(45deg, #2563eb, #3b82f6);
+      box-shadow: 0 4px 16px 0 rgba(37, 99, 235, 0.18);
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 2.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px 0 rgba(16, 185, 129, 0.13);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-right: 1.2rem;
+    }
+
+    .start-btn:hover {
+      background: linear-gradient(45deg, #059669, #10b981);
+      box-shadow: 0 4px 16px 0 rgba(16, 185, 129, 0.18);
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.21.1/minified.min.js"
+    integrity="sha512-U2gvuX8NaNSc0MOOvd1CTMp/kuzhlJ8HJKWF4G8JAw66iH+1keU5Mrzzrnqktf1SphOCow6dy69sTdblJdI8mA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/browser-image-compression@latest/dist/browser-image-compression.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    let selectedVersion = 'latest'
+    var controller
+    let selectedFiles = [];
+
+    // 1. Upload input से files चुनना
+    document.getElementById("web-worker").addEventListener("change", function (event) {
+      selectedFiles = Array.from(event.target.files);
+      updateApproxOutputSize();
+      document.getElementById("web-worker-log").innerHTML = "";
+      document.getElementById("download-btn-container").innerHTML = "";
+    });
+
+    // 2. Target size या resolution बदलने पर approx output size दिखाएं
+    document.getElementById("targetSize").addEventListener("input", updateApproxOutputSize);
+    document.getElementById("sizeUnit").addEventListener("change", updateApproxOutputSize);
+    document.getElementById("maxWidthOrHeight").addEventListener("change", updateApproxOutputSize);
+
+    function updateApproxOutputSize() {
+      if (!selectedFiles.length) {
+        document.getElementById("approx-output-size").innerText = "-";
+        return;
+      }
+      const sizeValue = parseFloat(document.getElementById("targetSize").value);
+      const sizeUnit = document.getElementById("sizeUnit").value;
+      let approx = sizeValue + " " + sizeUnit;
+      document.getElementById("approx-output-size").innerText = approx + " × " + selectedFiles.length + " file(s)";
+    }
+
+    // 2. Start बटन से compression शुरू करें
+    async function startCompression() {
+      if (!selectedFiles.length) {
+        alert("Please select image(s) first.");
+        return;
+      }
+      const logDom = document.querySelector("#web-worker-log");
+      const progressDom = document.querySelector("#web-worker-progress");
+      const downloadBtnContainer = document.getElementById("download-btn-container");
+      downloadBtnContainer.innerHTML = "";
+      logDom.innerHTML = "";
+
+      // Get size and unit
+      const sizeValue = parseFloat(document.getElementById("targetSize").value);
+      const sizeUnit = document.getElementById("sizeUnit").value;
+      const maxSizeMB = sizeUnit === "KB" ? sizeValue / 1024 : sizeValue;
+      const maxWidthOrHeight = parseFloat(document.getElementById("maxWidthOrHeight").value);
+
+      controller = typeof AbortController !== 'undefined' && new AbortController();
+
+      let compressedFiles = [];
+      let logs = [];
+      let aborted = false;
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        if (controller && controller.signal.aborted) {
+          aborted = true;
+          break;
+        }
+        const file = selectedFiles[i];
+        logs.push(
+          `<div>File: <b>${file.name}</b> | Source: ${(file.size / 1024 / 1024).toFixed(2)} MB</div>`
+        );
+        logDom.innerHTML = logs.join("");
+        progressDom.innerHTML = `(Compressing ${i + 1} of ${selectedFiles.length})`;
+
+        try {
+          const options = {
+            maxSizeMB: maxSizeMB,
+            maxWidthOrHeight: maxWidthOrHeight,
+            useWebWorker: true,
+            onProgress: (p) => {
+              progressDom.innerHTML = `(Compressing ${i + 1} of ${selectedFiles.length}) (${p}%)`;
+            },
+            preserveExif: true,
+            libURL: "https://cdn.jsdelivr.net/npm/browser-image-compression@" + selectedVersion + "/dist/browser-image-compression.js"
+          };
+          if (controller) options.signal = controller.signal;
+
+          const output = await imageCompression(file, options);
+
+          // 3. Output filename में suffix जोड़ें
+                    // ...existing code...
+          let suffix = "";
+          if (sizeUnit === "KB") {
+            suffix += Math.round(sizeValue) + "kb";
+          } else {
+            suffix += Math.round(sizeValue * 1024) + "kb";
+          }
+          if (maxWidthOrHeight === 480) {
+            suffix += "480p";
+          } else if (maxWidthOrHeight === 720) {
+            suffix += "720p";
+          } else if (maxWidthOrHeight === 1080) {
+            suffix += "1080p";
+          } else {
+            suffix += maxWidthOrHeight + "p";
+          }
+          const ext = file.name.split('.').pop();
+          const base = file.name.replace(/\.[^/.]+$/, "");
+          const outName = `${base}${suffix ? "_" + suffix : ""}.${ext}`;
+          // ...existing code...
+
+          compressedFiles.push({ file: output, name: outName });
+          logs.push(
+            `<div style="color:#10b981;">✔ Compressed: <b>${outName}</b> | Output: ${(output.size / 1024 / 1024).toFixed(2)} MB</div>`
+          );
+          logDom.innerHTML = logs.join("");
+        } catch (error) {
+          logs.push(
+            `<div style="color:#e11d48;">✖ Failed: <b>${file.name}</b> | ${error.message}</div>`
+          );
+          logDom.innerHTML = logs.join("");
+        }
+      }
+
+      progressDom.innerHTML = "";
+
+      // Show download buttons for each file
+      downloadBtnContainer.innerHTML = compressedFiles
+        .map(
+          (f, idx) =>
+            `<a href="${URL.createObjectURL(f.file)}" download="${f.name}" class="download-btn">Download ${f.name}</a>`
+        )
+        .join("");
+
+      // Batch download as zip if more than one file
+      if (compressedFiles.length > 1) {
+        const zipBtn = document.createElement("button");
+        zipBtn.className = "download-btn";
+        zipBtn.innerText = "Download All as ZIP";
+        zipBtn.onclick = async function () {
+          zipBtn.disabled = true;
+          zipBtn.innerText = "Preparing ZIP...";
+          const zip = new JSZip();
+          for (const f of compressedFiles) {
+            zip.file(f.name, f.file);
+          }
+          const blob = await zip.generateAsync({ type: "blob" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "compressed-images.zip";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          zipBtn.disabled = false;
+          zipBtn.innerText = "Download All as ZIP";
+        };
+        downloadBtnContainer.appendChild(zipBtn);
+      }
+    }
+
+    function abort() {
+      if (controller) controller.abort(new Error('I just want to stop'));
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
