@@ -687,6 +687,124 @@ function Tab6ImagesToPdf() {
   );
 }
 
+function Tab6PdfToImages() {
+  const [images, setImages] = React.useState([]);
+  const [processing, setProcessing] = React.useState(false);
+
+  // Dynamically load JSZip if not present
+  React.useEffect(() => {
+    if (!window.JSZip) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setProcessing(true);
+    setImages([]);
+    const fileReader = new FileReader();
+    fileReader.onload = async function() {
+      const typedarray = new Uint8Array(this.result);
+      const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
+      const imgs = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 1 }); // Small thumbnail
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const context = canvas.getContext('2d');
+        await page.render({ canvasContext: context, viewport }).promise;
+        imgs.push(canvas.toDataURL("image/png"));
+      }
+      setImages(imgs);
+      setProcessing(false);
+    };
+    fileReader.readAsArrayBuffer(file);
+  };
+
+  const handleDownloadZip = async () => {
+    if (!window.JSZip) {
+      alert("Loading ZIP engine, please wait a moment and try again.");
+      return;
+    }
+    const zip = new window.JSZip();
+    images.forEach((img, idx) => {
+      // Remove data URL header for base64
+      zip.file(`page${idx + 1}.png`, img.split(',')[1], { base64: true });
+    });
+    const blob = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "pdf_images.zip";
+    a.click();
+  };
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
+      <h2 style={{ color: "#2563eb", marginBottom: 16 }}>PDF to Images</h2>
+      <input type="file" accept="application/pdf" onChange={handleFileChange} />
+      {processing && <div style={{ margin: 16 }}>Processing...</div>}
+      {images.length > 0 && (
+        <div style={{ margin: "16px 0" }}>
+          <button
+            onClick={handleDownloadZip}
+            style={{
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              padding: "8px 18px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              marginBottom: 12
+            }}
+          >
+            Download All as ZIP
+          </button>
+        </div>
+      )}
+      <div style={{ marginTop: 24, display: "flex", flexWrap: "wrap", gap: 16 }}>
+        {images.map((img, idx) => (
+          <div key={idx} style={{ width: 90, textAlign: "center" }}>
+            <img
+              src={img}
+              alt={`Page ${idx + 1}`}
+              style={{
+                width: 80,
+                height: 100,
+                objectFit: "cover",
+                border: "1px solid #b6cbe7",
+                borderRadius: 4,
+                background: "#fafdff",
+                display: "block",
+                margin: "0 auto"
+              }}
+            />
+            <a
+              href={img}
+              download={`page${idx + 1}.png`}
+              style={{
+                display: "block",
+                marginTop: 6,
+                color: "#2563eb",
+                fontSize: "0.95em",
+                textDecoration: "underline"
+              }}
+            >
+              Download
+            </a>
+            <div style={{ fontSize: "0.85em", color: "#374151" }}>Page {idx + 1}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
@@ -769,7 +887,7 @@ function App() {
                 className={`ribbon-tab-btn${activeTab === "tab6" ? " active" : ""}`}
                 onClick={() => setActiveTab("tab6")}
               >
-                Images to PDF
+                PDF to Images
               </button>
             </div>
             <div style={{ marginTop: "3rem", textAlign: "center" }}>
@@ -916,7 +1034,7 @@ function App() {
                   </div>
                 </div>
               )}
-              {activeTab === "tab6" && <Tab6ImagesToPdf />}
+              {activeTab === "tab6" && <Tab6PdfToImages />}
             </div>
           </div>
           {/* Feedback Button */}
