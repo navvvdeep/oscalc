@@ -911,14 +911,14 @@ function App() {
                   <div style={{
                     width: "100%",
                     maxWidth: 900,
-                    minHeight: "100vh",
-                    height: "100vh",
+                    minHeight: "127vh",
+                    height: "115vh",
                     background: "#fff",
                     borderRadius: "0.75rem",
                     boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
                     overflow: "hidden",
                     display: "flex",
-                    flexDirection: "column"
+                    flexDirection: "column",
                   }}>
                     <iframe
                       src="kruti.html"
@@ -926,13 +926,13 @@ function App() {
                       style={{
                         width: "100%",
                         maxWidth: "100vw",
-                        height: "100%",
-                        maxHeight: "100vh",
+                        height: "200%",
+                        maxHeight: "200vh",
                         display: "flex",
                         border: "none",
                         background: "#fff",
                         flex: 1,
-                        minHeight: 300,
+                        minHeight: 400,
                       }}
                       allowFullScreen
                     />
