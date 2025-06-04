@@ -27,11 +27,11 @@
 
     .main-heading {
       text-align: center;
-      font-size: 2.1rem;
+      font-size: 1.89rem; /* 10% smaller */
       font-weight: 700;
       color: #2563eb;
-      margin-top: 2.2rem;
-      margin-bottom: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1.35rem;
       letter-spacing: 0.5px;
       background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
       -webkit-background-clip: text;
@@ -46,25 +46,25 @@
       justify-content: flex-start;
       align-items: center;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      gap: 1.2rem;
+      gap: 1.08rem; /* 10% smaller */
     }
 
     #pdf_input_container,
-    #selected_pdf_container,
     #range_container,
     #compress_pdf_container {
       background: #ffffff;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
-      margin: 0.5rem 0;
-      padding: 1.2rem 1.2rem 1rem 1.2rem;
-      min-width: 220px;
-      min-height: 80px;
-      width: 320px;
-      max-width: 95vw;
+      border-radius: 0.68rem; /* 10% smaller */
+      box-shadow: 0 3.6px 18px rgba(37, 99, 235, 0.08); /* 10% smaller */
+      margin: 0.45rem 0;
+      padding: 1.08rem 1.08rem 0.9rem 1.08rem;
+      min-width: 198px;
+      min-height: 72px;
+      width: 288px;
+      max-width: 86vw;
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      font-size: 0.9em; /* 10% smaller */
     }
 
     #pdf_input_container {
@@ -80,36 +80,37 @@
       border: 1px solid #b5c9e7;
       background: linear-gradient(45deg, #3b82f6, #2563eb);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.13);
+      box-shadow: 0 3.6px 10.8px rgba(37, 99, 235, 0.13);
       align-items: center;
-      padding: 0.7rem 0.7rem;
+      padding: 0.63rem 0.63rem;
+      font-size: 0.9em;
     }
 
     #compress_input_output {
       display: inline-block;
-      width: 25px;
-      max-width: 25px;
-      margin-left: 5px;
-      margin-right: 5px;
+      width: 22.5px;
+      max-width: 22.5px;
+      margin-left: 4.5px;
+      margin-right: 4.5px;
       color: #2563eb;
       font-weight: bold;
-      font-size: 1.1em;
+      font-size: 0.99em;
     }
 
     #compress_pdf {
       border: 1px solid #2563eb;
       background: linear-gradient(45deg, #3b82f6, #2563eb);
       color: #fff;
-      padding: 6px 18px;
-      border-radius: 0.5rem;
+      padding: 5.4px 16.2px;
+      border-radius: 0.45rem;
       font-weight: bold;
-      font-size: 1em;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.13);
+      font-size: 0.9em;
+      box-shadow: 0 1.8px 7.2px rgba(37, 99, 235, 0.13);
       transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
       outline: none;
       animation: none;
       cursor: pointer;
-      min-width: 120px;
+      min-width: 108px;
       margin: 0 auto;
       display: block;
     }
@@ -124,35 +125,48 @@
 
     #compress_pdf:hover:not(:disabled) {
       background: linear-gradient(45deg, #2563eb, #3b82f6);
-      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
-      transform: translateY(-2px);
+      box-shadow: 0 3.6px 14.4px rgba(37, 99, 235, 0.18);
+      transform: translateY(-1.8px);
     }
 
     #selected_pdf_container {
       border: 1px solid #b6cbe7;
       background: linear-gradient(180deg, #fafdff 0%, #dbe8fa 100%);
+      /* DO NOT compact this box */
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+      margin: 0.5rem 0;
+      padding: 1.2rem 1.2rem 1rem 1.2rem;
+      min-width: 220px;
+      min-height: 80px;
+      width: 320px;
+      max-width: 95vw;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      font-size: 1em;
     }
 
     #pdf_input {
       outline: none;
       font-family: inherit;
-      border-radius: 0.375rem;
+      border-radius: 0.34rem;
       border: 1px solid #b6cbe7;
       background: #f3f4f6;
-      padding: 0.5rem;
+      padding: 0.45rem;
       color: #2a3b5d;
-      font-size: 1em;
+      font-size: 0.9em;
     }
 
     #pdf_input::-webkit-file-upload-button {
-      border-radius: 10px;
+      border-radius: 9px;
       border: 1px solid #b6cbe7;
       outline: none;
       background: linear-gradient(180deg, #eaf1fb 0%, #d0e2fa 100%);
       font-family: inherit;
       color: #205081;
       font-weight: 600;
-      padding: 0.5em 1.2em;
+      padding: 0.45em 1.08em;
       transition: background 0.2s;
       cursor: pointer;
     }
@@ -160,7 +174,7 @@
     #pdf_input::-webkit-file-upload-button:hover {
       background: linear-gradient(180deg, #fafdff 0%, #cbe0fa 100%);
       color: #17406a;
-      transform: translateY(-0.75px);
+      transform: translateY(-0.68px);
     }
 
     .handle {
@@ -178,47 +192,48 @@
 
     .ghost-class {
       background-color: #eaf1fb;
-      border-radius: 5px;
+      border-radius: 4.5px;
       width: max-content;
-      border: 1.5px solid #b6cbe7;
+      border: 1.35px solid #b6cbe7;
     }
 
     @keyframes loading {
       0% {
-        border: 2px solid #3b82f6;
+        border: 1.8px solid #3b82f6;
         color: #3b82f6;
-        box-shadow: 0px 1px 10px 1px rgba(37, 99, 235, 0.5);
+        box-shadow: 0px 0.9px 9px 0.9px rgba(37, 99, 235, 0.5);
       }
 
       33% {
-        border: 2px solid #10b981;
+        border: 1.8px solid #10b981;
         color: #10b981;
-        box-shadow: 0px 1px 10px 1px rgba(16, 185, 129, 0.5);
+        box-shadow: 0px 0.9px 9px 0.9px rgba(16, 185, 129, 0.5);
       }
 
       66% {
-        border: 2px solid #f4b400;
+        border: 1.8px solid #f4b400;
         color: #f4b400;
-        box-shadow: 0px 1px 10px 1px rgba(244, 160, 0, 0.5);
+        box-shadow: 0px 0.9px 9px 0.9px rgba(244, 160, 0, 0.5);
       }
 
       100% {
-        border: 2px solid #2563eb;
+        border: 1.8px solid #2563eb;
         color: #2563eb;
-        box-shadow: 0px 1px 10px 1px rgba(37, 99, 235, 0.5);
+        box-shadow: 0px 0.9px 9px 0.9px rgba(37, 99, 235, 0.5);
       }
     }
 
     button {
-      border-radius: 0.5rem;
+      border-radius: 0.45rem;
       font-family: inherit;
       background: #e0e0e0;
       color: #222;
       font-weight: 600;
       border: 1px solid #d1d5db;
-      padding: 8px 18px;
+      padding: 7.2px 16.2px;
       transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
       cursor: pointer;
+      font-size: 0.9em;
     }
 
     button:disabled {
@@ -230,8 +245,8 @@
 
     button:hover:not(:disabled) {
       background: #dbe8fa;
-      box-shadow: 0px 1px 7px 1px rgba(37, 99, 235, 0.13);
-      transform: translateY(-0.75px);
+      box-shadow: 0px 0.9px 6.3px 0.9px rgba(37, 99, 235, 0.13);
+      transform: translateY(-0.68px);
       color: #2563eb;
     }
 
@@ -241,68 +256,65 @@
         flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
-        padding: 1rem 0;
-        gap: 0.7rem;
+        padding: 0.9rem 0;
+        gap: 0.63rem;
       }
       #pdf_input_container,
       #selected_pdf_container,
       #range_container,
       #compress_pdf_container {
         min-width: unset;
-        width: 98vw;
-        margin: 0.5rem auto;
-        padding: 1rem;
+        width: 88vw;
+        margin: 0.45rem auto;
+        padding: 0.9rem;
       }
       .main-heading {
-        font-size: 1.3rem;
-        margin-top: 1.2rem;
-        margin-bottom: 1rem;
+        font-size: 1.17rem;
+        margin-top: 1.08rem;
+        margin-bottom: 0.9rem;
       }
     }
   </style>
-    <div class="main-heading" style="display: flex; flex-direction: column; align-items: center; gap: 0.2em;">
+  <div class="main-heading" style="display: flex; flex-direction: column; align-items: center; gap: 0.18em;">
     <span>PDF Compressor and Merge</span>
-    <span style="display: flex; flex-direction: column; align-items: center; gap: 0.2em;">
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 0.18em;">
       Image To PDF Converter
     </span>
   </div>
   <div id="main_container">
-    <!-- Restore original PDF-only input and logic -->
     <div id="pdf_input_container">
-      <!-- Accept PDF and image files -->
       <input id="pdf_input" type="file" accept="application/pdf,image/jpeg,image/png" multiple />
-      <div id="input_file_size" style="margin-top:8px; color:#2563eb; font-size:0.98em;"></div>
+      <div id="input_file_size" style="margin-top:7.2px; color:#2563eb; font-size:0.88em;"></div>
     </div>
     <div id="selected_pdf_container">
       <div style="font-weight:600; color:#2563eb; font-size:1.05em; margin-bottom:0.5em;">Output Order</div>
       <div id="selected_pdf_list" title="Hold and drag the handle to order the output PDF pages"></div>
     </div>
     <div id="range_container">
-      <label for="compress_input" style="font-weight:600; color:#2563eb; margin-bottom:4px; display:block;">
+      <label for="compress_input" style="font-weight:600; color:#2563eb; margin-bottom:3.6px; display:block;">
         Compression Ratio
       </label>
       <input id="compress_input" title="Compression Ratio" type="range" min="0" max="1" value="0.5" step="0.1" />
       <p id="compress_input_output" title="Higher the Value, Better the Compression">
         0.5
       </p>
-      <div id="output_file_size" style="color:#059669; font-size:0.98em;"></div>
+      <div id="output_file_size" style="color:#059669; font-size:0.88em;"></div>
     </div>
-    <!-- Remove background box for compress button -->
-    <div style="display:flex; justify-content:center; align-items:center; margin-top:0.5em;">
+    <div style="display:flex; justify-content:center; align-items:center; margin-top:0.45em;">
       <button id="compress_pdf" title="Compress and Combine selected PDF files in Specified order" style="
         border: 1px solid #2563eb;
         background: linear-gradient(45deg, #3b82f6, #2563eb);
         color: #fff;
-        padding: 6px 18px;
-        border-radius: 0.5rem;
+        padding: 5.4px 16.2px;
+        border-radius: 0.45rem;
         font-weight: bold;
-        font-size: 1em;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.13);
+        font-size: 0.9em;
+        box-shadow: 0 1.8px 7.2px rgba(37, 99, 235, 0.13);
         transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
         outline: none;
         animation: none;
         cursor: pointer;
-        min-width: 120px;
+        min-width: 108px;
         margin: 0 auto;
         display: block;
       ">

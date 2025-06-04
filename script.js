@@ -911,7 +911,7 @@ function App() {
                   <div style={{
                     width: "100%",
                     maxWidth: 900,
-                    minHeight: "127vh",
+                    minHeight: "160vh",
                     height: "115vh",
                     background: "#fff",
                     borderRadius: "0.75rem",
@@ -955,7 +955,7 @@ function App() {
                   <div style={{
                     width: "100%",
                     maxWidth: 900,
-                    minHeight: "100vh",
+                    minHeight: "50vh",
                     height: "100vh",
                     background: "#fff",
                     borderRadius: "0.75rem",
@@ -970,13 +970,13 @@ function App() {
                       style={{
                         width: "100%",
                         maxWidth: "100vw",
-                        height: "100%",
-                        maxHeight: "100vh",
+                        height: "200%",
+                        maxHeight: "1000vh",
                         display: "flex",
                         border: "none",
                         background: "#fff",
                         flex: 1,
-                        minHeight: 400,
+                        minHeight: 500,
                         overflow: "hidden",
                         scrollbarWidth: "5px"
                       }}
