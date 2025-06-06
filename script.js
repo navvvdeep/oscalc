@@ -712,7 +712,7 @@ function Tab6PdfToImages() {
       const imgs = [];
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 5 }); // Small thumbnail
+        const viewport = page.getViewport({ scale: 3 }); // Small thumbnail
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
