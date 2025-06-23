@@ -318,7 +318,23 @@
         margin: 0 auto;
         display: block;
       ">
-        Compress PDF
+        Merge & Compress PDF
+      </button>
+      <button id="reset_pdf" title="Reset All" style="
+        border: 1px solid #e11d48;
+        background: #fff;
+        color: #e11d48;
+        padding: 5.4px 16.2px;
+        border-radius: 0.45rem;
+        font-weight: bold;
+        font-size: 0.9em;
+        box-shadow: 0 1.8px 7.2px rgba(37, 99, 235, 0.08);
+        margin-left: 12px;
+        cursor: pointer;
+        min-width: 108px;
+        display: block;
+      ">
+        Reset
       </button>
     </div>
   </div>
@@ -354,6 +370,7 @@
       resetTempArrays();
       //clearPDFList();
       resetLoading();
+      document.getElementById("output_file_size").innerText = "";
     }
 
     function addFileEntry(file_name) {
@@ -618,6 +635,13 @@
 
       stream.on("finish", function () {
         var output_blob = stream.toBlob("application/pdf");
+        // Show output file size
+        const outputSize = output_blob.size;
+        const outputDiv = document.getElementById("output_file_size");
+        let sizeStr = outputSize > 1024 * 1024
+          ? (outputSize / (1024 * 1024)).toFixed(2) + " MB"
+          : (outputSize / 1024).toFixed(2) + " KB";
+        outputDiv.innerText = `Output size: ${sizeStr}`;
         saveAs(output_blob, "MergedCompressed.pdf");
         onPDFCompressed();
       });
@@ -662,7 +686,72 @@
     document.getElementById("pdf_input").removeEventListener("input", updateInputFileSize);
     document.getElementById("pdf_input").addEventListener("input", function (e) {
       updateInputFileSize();
+      showEstimatedOutputSize();
       onInputPDF.call(this, e);
+    });
+
+    function updateInputFileSize() {
+      const input = document.getElementById("pdf_input");
+      const info = document.getElementById("input_file_size");
+      if (!input.files.length) {
+        info.innerText = "";
+        return;
+      }
+      let total = 0;
+      for (let i = 0; i < input.files.length; i++) {
+        total += input.files[i].size;
+      }
+      let sizeStr = total > 1024 * 1024
+        ? (total / (1024 * 1024)).toFixed(2) + " MB"
+        : (total / 1024).toFixed(2) + " KB";
+      info.innerText = `Total size: ${sizeStr}`;
+    }
+
+    document.getElementById("compress_input").addEventListener("input", function () {
+      showEstimatedOutputSize();
+    });
+
+    function showEstimatedOutputSize() {
+      const input = document.getElementById("pdf_input");
+      const outputDiv = document.getElementById("output_file_size");
+      if (!input.files.length) {
+        outputDiv.innerText = "";
+        return;
+      }
+      let pdfTotal = 0;
+      let imgTotal = 0;
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        if (
+          file.type === "application/pdf" ||
+          file.name.toLowerCase().endsWith(".pdf")
+        ) {
+          pdfTotal += file.size;
+        } else if (
+          file.type === "image/jpeg" ||
+          file.type === "image/png" ||
+          file.name.toLowerCase().endsWith(".jpg") ||
+          file.name.toLowerCase().endsWith(".jpeg") ||
+          file.name.toLowerCase().endsWith(".png")
+        ) {
+          imgTotal += file.size;
+        }
+      }
+      const compression = Number(document.getElementById("compress_input").value);
+      // PDF files पर ही compression apply करें
+      let estimated = pdfTotal * (0.5 + 0.5 * (1 - compression)) + imgTotal;
+      let sizeStr = estimated > 1024 * 1024
+        ? (estimated / (1024 * 1024)).toFixed(2) + " MB"
+        : (estimated / 1024).toFixed(2) + " KB";
+      outputDiv.innerText = `Estimated output: ${sizeStr}`;
+    }
+
+    document.getElementById("reset_pdf").addEventListener("click", function () {
+      document.getElementById("pdf_input").value = "";
+      document.getElementById("input_file_size").innerText = "";
+      document.getElementById("output_file_size").innerText = "";
+      clearPDFList();
+      resetTempArrays();
     });
   </script>
 </body>
