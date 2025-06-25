@@ -6,6 +6,7 @@ function filledCell(cell) {
   return cell !== '' && cell != null;
 }
 
+
 function loadFileData(filename) {
   if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
     try {
@@ -811,16 +812,16 @@ function App() {
   const [translations, setTranslations] = useState(null);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
-  // const [totpVerified, setTotpVerified] = React.useState(false); // <-- Disable TOTP
+  const [totpVerified, setTotpVerified] = React.useState(false); // <-- यह लाइन जोड़ें
 
   useEffect(() => {
     loadTranslations().then(setTranslations);
   }, []);
 
-  // --- Disable TOTP check ---
-  // if (!totpVerified) {
-  //   return <TotpModal onSuccess={() => setTotpVerified(true)} />;
-  // }
+  // --- TOTP check यहाँ करें ---
+  if (!totpVerified) {
+    return <TotpModal onSuccess={() => setTotpVerified(true)} />;
+  }
 
   if (!translations) {
     return <div>Loading...</div>;
@@ -899,17 +900,6 @@ function App() {
                 <div
                   style={{
                     width: "100%",
-                    maxWidth: "100vw",
-                    margin: "0 auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    background: "transparent",
-                    minHeight: "60vh"
-                  }}
-                >
-                  <div style={{
-                    width: "100%",
                     maxWidth: 900,
                     minHeight: "160vh",
                     height: "115vh",
@@ -919,40 +909,29 @@ function App() {
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
-                  }}>
-                    <iframe
-                      src="kruti.html"
-                      title="Krutidev To Mangal"
-                      style={{
-                        width: "100%",
-                        maxWidth: "100vw",
-                        height: "200%",
-                        maxHeight: "200vh",
-                        display: "flex",
-                        border: "none",
-                        background: "#fff",
-                        flex: 1,
-                        minHeight: 400,
-                      }}
-                      allowFullScreen
-                    />
-                  </div>
+                  }}
+                >
+                  <iframe
+                    src="kruti.html"
+                    title="Krutidev To Mangal"
+                    style={{
+                      width: "100%",
+                      maxWidth: "100vw",
+                      height: "200%",
+                      maxHeight: "200vh",
+                      display: "flex",
+                      border: "none",
+                      background: "#fff",
+                      flex: 1,
+                      minHeight: 400,
+                    }}
+                    allowFullScreen
+                  />
                 </div>
               )}
               {activeTab === "tab4" && (
                 <div
                   style={{
-                    width: "100%",
-                    maxWidth: "100vw",
-                    margin: "0 auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    background: "transparent",
-                    minHeight: "60vh"
-                  }}
-                >
-                  <div style={{
                     width: "100%",
                     maxWidth: 900,
                     minHeight: "50vh",
@@ -963,43 +942,32 @@ function App() {
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column"
-                  }}>
-                    <iframe
-                      src="pdf.html"
-                      title="PDF Compressor/Image to PDF"
-                      style={{
-                        width: "100%",
-                        maxWidth: "100vw",
-                        height: "200%",
-                        maxHeight: "1000vh",
-                        display: "flex",
-                        border: "none",
-                        background: "#fff",
-                        flex: 1,
-                        minHeight: 500,
-                        overflow: "hidden",
-                        scrollbarWidth: "5px"
-                      }}
-                      scrolling="yes"
-                      allowFullScreen
-                    />
-                  </div>
+                  }}
+                >
+                  <iframe
+                    src="pdf.html"
+                    title="PDF Compressor/Image to PDF"
+                    style={{
+                      width: "100%",
+                      maxWidth: "100vw",
+                      height: "200%",
+                      maxHeight: "1000vh",
+                      display: "flex",
+                      border: "none",
+                      background: "#fff",
+                      flex: 1,
+                      minHeight: 500,
+                      overflow: "hidden",
+                      scrollbarWidth: "5px"
+                    }}
+                    scrolling="yes"
+                    allowFullScreen
+                  />
                 </div>
               )}
               {activeTab === "tab5" && (
                 <div
                   style={{
-                    width: "100%",
-                    maxWidth: "100vw",
-                    margin: "0 auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    background: "transparent",
-                    minHeight: "60vh"
-                  }}
-                >
-                  <div style={{
                     width: "100%",
                     maxWidth: 900,
                     minHeight: "100vh",
@@ -1010,28 +978,28 @@ function App() {
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column"
-                  }}>
-                    <iframe
-                      src="image.html"
-                      title="Image Compressor/Resizer"
-                      style={{
-                        width: "100%",
-                        maxWidth: "100vw",
-                        height: "100%",
-                        maxHeight: "100vh",
-                        display: "flex",
-                        border: "none",
-                        background: "#fff",
-                        flex: 1,
-                        minHeight: 400,
-                        overflow: "hidden",
-                        scrollbarWidth: "5px"
-                        
-                      }}
-                      scrolling="yes"
-                      allowFullScreen
-                    />
-                  </div>
+                  }}
+                >
+                  <iframe
+                    src="image.html"
+                    title="Image Compressor/Resizer"
+                    style={{
+                      width: "100%",
+                      maxWidth: "100vw",
+                      height: "100%",
+                      maxHeight: "100vh",
+                      display: "flex",
+                      border: "none",
+                      background: "#fff",
+                      flex: 1,
+                      minHeight: 400,
+                      overflow: "hidden",
+                      scrollbarWidth: "5px"
+                      
+                    }}
+                    scrolling="yes"
+                    allowFullScreen
+                  />
                 </div>
               )}
               {activeTab === "tab6" && <Tab6PdfToImages />}
