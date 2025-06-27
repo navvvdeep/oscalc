@@ -52,7 +52,78 @@ async function loadTranslations() {
   return translations;
 }
 
-const { useState, useEffect } = React;
+const { useState, useEffect, createContext, useContext } = React;
+const Auth0Context = createContext();
+
+const Auth0Provider = ({ children }) => {
+  const [auth0Client, setAuth0Client] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    console.log("Auth0Provider useEffect: Starting Auth0 initialization");
+    const initAuth0 = async () => {
+      const client = await auth0.createAuth0Client({
+        domain: 'dev-3jm637s7ijfjxtor.us.auth0.com',
+        clientId: 'bi4lmTCvAJLHPN8EmVpjiqPXKRCOMB0e',
+        authorizationParams: {
+          redirect_uri: window.location.origin
+        }
+      });
+      setAuth0Client(client);
+      console.log("Auth0Provider useEffect: Auth0 client created");
+
+      if (window.location.search.includes("code=") && 
+          window.location.search.includes("state=")) {
+        console.log("Auth0Provider useEffect: Handling redirect callback");
+        const { appState } = await client.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/");
+        console.log("Auth0Provider useEffect: Redirect callback handled");
+      }
+
+      const isAuthenticated = await client.isAuthenticated();
+      setIsAuthenticated(isAuthenticated);
+      console.log("Auth0Provider useEffect: Is authenticated:", isAuthenticated);
+
+      if (isAuthenticated) {
+        const userProfile = await client.getUser();
+        setUser(userProfile);
+        console.log("Auth0Provider useEffect: User profile loaded:", userProfile);
+      }
+      setIsLoading(false);
+      console.log("Auth0Provider useEffect: Auth0 initialization finished");
+    };
+
+    initAuth0();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const loginWithRedirect = async () => {
+    if (auth0Client) {
+      await auth0Client.loginWithRedirect();
+    } else {
+      console.error("Auth0 client not initialized.");
+    }
+  };
+
+  const logout = () => {
+    auth0Client.logout({
+      logoutParams: {
+        returnTo: window.location.origin
+      }
+    });
+  };
+
+  return (
+    <Auth0Context.Provider value={{ isAuthenticated, user, loginWithRedirect, logout }}>
+      {children}
+    </Auth0Context.Provider>
+  );
+};
 
 const autoSetTaxRate = (vehicle, price, ac) => {
   if (vehicle === "M-Cycle/Scooter") {
@@ -309,43 +380,7 @@ const Tab2 = ({ text }) => {
   );
 };
 
-function Login({ onLogin, text }) {
-  const [mobile, setMobile] = React.useState('');
-  const [error, setError] = React.useState('');
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (/^\d{10}$/.test(mobile)) {
-      setError('');
-      onLogin(mobile);
-    } else {
-      setError(text.invalidMobile || "Please enter a valid 10-digit mobile number.");
-    }
-  };
-
-  return (
-    <div className="bg-white p-6 rounded shadow max-w-sm mx-auto mt-12">
-      <h2 className="text-xl font-bold mb-4 text-left">{text.loginTitle || "Login"}</h2>
-      <form onSubmit={handleLogin}>
-        <label className="block mb-2 text-left">{text.mobileLabel || "Mobile Number"}:</label>
-        <input
-          type="tel"
-          className="w-full p-2 border rounded mb-2"
-          value={mobile}
-          onChange={e => setMobile(e.target.value)}
-          placeholder={text.mobilePlaceholder || "Enter mobile number"}
-        />
-        {error && <div className="text-red-600 mb-2 text-left">{error}</div>}
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full"
-        >
-          {text.loginBtn || "Login"}
-        </button>
-      </form>
-    </div>
-  );
-}
 
 function LanguageSwitcher({ language, setLanguage }) {
   return (
@@ -515,77 +550,7 @@ function GoogleFormBox({ open, onClose }) {
   );
 }
 
-// Add this TOTP modal before your App component
-function TotpModal({ onSuccess }) {
-  const [code, setCode] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const res = await fetch('https://oscalc.onrender.com/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: code })
-      });
-      const text = await res.text();
-      if (text.trim().toLowerCase().startsWith("ok")) {
-        onSuccess();
-      } else if (text.toLowerCase().includes("invalid")) {
-        setError("Invalid code. Try again.");
-      } else {
-        setError("Verification failed.");
-      }
-    } catch {
-      setError("Server error. Try again.");
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div style={{
-      position: "fixed", zIndex: 100001, top: 0, left: 0, width: "100vw", height: "100vh",
-      background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center"
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: "#fff", borderRadius: "16px", width: 340, padding: "2.5rem 2rem",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.18)", textAlign: "center", position: "relative"
-      }}>
-        <h2 style={{ fontWeight: "bold", fontSize: "1.3em", marginBottom: "1.2rem", color: "#2563eb" }}>
-          🔒 TOTP Authentication
-        </h2>
-        <input
-          type="text"
-          value={code}
-          onChange={e => setCode(e.target.value.replace(/\D/g, ""))}
-          placeholder="Enter 6-digit code"
-          style={{
-            width: "100%", padding: "12px", fontSize: "1.1em", borderRadius: "6px",
-            border: "1px solid #bbb", marginBottom: "1.2rem", outline: "none"
-          }}
-          maxLength={6}
-          autoFocus
-          disabled={loading}
-        />
-        {error && <div style={{ color: "#b91c1c", marginBottom: "1rem" }}>{error}</div>}
-        <button
-          type="submit"
-          disabled={loading || code.length !== 6}
-          style={{
-            background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px",
-            padding: "10px 0", fontWeight: "bold", fontSize: "1.1em", width: "100%",
-            cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1
-          }}
-        >
-          {loading ? "Verifying..." : "Verify"}
-        </button>
-      </form>
-    </div>
-  );
-}
 
 // Tab6: Images to PDF (browser-based, A4 size)
 function Tab6ImagesToPdf() {
@@ -807,29 +772,58 @@ function Tab6PdfToImages() {
 }
 
 function App() {
+  const { isAuthenticated, loginWithRedirect, logout, user } = useContext(Auth0Context);
   const [activeTab, setActiveTab] = useState("tab1");
   const [language, setLanguage] = useState('en');
   const [translations, setTranslations] = useState(null);
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [translationsLoading, setTranslationsLoading] = useState(true);
+  const [translationsError, setTranslationsError] = useState(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    const agreed = localStorage.getItem('disclaimerAgreed');
+    return agreed !== 'true';
+  });
   const [showFeedback, setShowFeedback] = useState(false);
-  const [totpVerified, setTotpVerified] = React.useState(false); // <-- यह लाइन जोड़ें
 
   useEffect(() => {
-    loadTranslations().then(setTranslations);
+    console.log("App useEffect: Starting translation load");
+    const fetchTranslations = async () => {
+      try {
+        const data = await loadTranslations();
+        setTranslations(data);
+        console.log("App useEffect: Translations loaded successfully");
+      } catch (error) {
+        console.error("App useEffect: Error loading translations:", error);
+        setTranslationsError(error);
+      } finally {
+        setTranslationsLoading(false);
+        console.log("App useEffect: Translations loading finished");
+      }
+    };
+    fetchTranslations();
   }, []);
 
-  // --- TOTP check यहाँ करें ---
-  if (!totpVerified) {
-    return <TotpModal onSuccess={() => setTotpVerified(true)} />;
+  
+
+  if (!isAuthenticated) {
+    useEffect(() => {
+      loginWithRedirect();
+    }, []);
+
+    return <div>Redirecting to login...</div>;
   }
 
-  if (!translations) {
-    return <div>Loading...</div>;
+  if (translationsLoading) {
+    return <div>Loading translations...</div>;
+  }
+
+  if (translationsError) {
+    return <div>Error loading translations: {translationsError.message}</div>;
   }
 
   const text = translations[language];
 
   const handleAgree = () => {
+    localStorage.setItem('disclaimerAgreed', 'true');
     setShowDisclaimer(false);
   };
 
@@ -852,6 +846,7 @@ function App() {
             <div className="top-bar">
               <LanguageSwitcher language={language} setLanguage={setLanguage} />
               <Clock />
+              <button className="logout-button" onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>
             </div>
             <div className="ribbon-tabs">
               <button
@@ -1033,4 +1028,4 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<Auth0Provider><App /></Auth0Provider>);
